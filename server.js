@@ -9,19 +9,21 @@ app.use(express.json());
 
 const API_KEY = process.env.GEMINI_API_KEY;
 const API_URL =
-  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.0-pro-latest:generateContent";
 
-const MAX_TIMEOUT = 20000; // 20 seconds max timeout
-const MAX_RETRIES = 3; // Retry up to 3 times
+const MAX_TIMEOUT = 10000; // Reduce timeout to 10s
+const MAX_RETRIES = 2; // Reduce retries to avoid long waits
 
 /**
  * Function to fetch AI response with retries.
  */
 const fetchGeminiResponse = async (data, retries = 0) => {
   try {
+    console.log(`Requesting Gemini API (Attempt ${retries + 1})...`);
+
     const response = await axios.post(`${API_URL}?key=${API_KEY}`, data, {
-      headers: { "Content-Type": "application/json" },
-      timeout: MAX_TIMEOUT, // Prevents long waits
+      headers: { "Content-Type": "application/json", Connection: "keep-alive" },
+      timeout: MAX_TIMEOUT, // 10 seconds timeout to prevent long waits
     });
 
     return response.data;
@@ -41,12 +43,11 @@ const fetchGeminiResponse = async (data, retries = 0) => {
  * AI Endpoint: Generates AI content based on user input.
  */
 app.post("/api/gemini", async (req, res) => {
-  res.setTimeout(25000, () => {
-    return res.status(504).json({ error: "Server timed out. Try again." });
-  });
+  req.setTimeout(25000); // Prevents Vercel from cutting off request early
 
   try {
     const aiResponse = await fetchGeminiResponse(req.body);
+    res.set("Connection", "keep-alive"); // Helps with cold starts
     res.json(aiResponse);
   } catch (error) {
     console.error("Final AI API error:", error);
@@ -62,8 +63,5 @@ app.post("/api/gemini", async (req, res) => {
   }
 });
 
-// Start server locally
-const PORT = process.env.PORT || 8090;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-
-module.exports = app; // Export for Vercel
+// Export app for Vercel
+module.exports = app;
