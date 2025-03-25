@@ -11,8 +11,5 @@
       "src": "/api/(.*)",
       "dest": "server.js"
     }
-  ],
-  "env": {
-    "API_KEY": "@api_key"
-  }
+  ]
 }
