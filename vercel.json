@@ -11,5 +11,10 @@
       "src": "/api/gemini",
       "dest": "server.js"
     }
-  ]
+  ],
+  "functions": {
+    "server.js": {
+      "maxDuration": 25
+    }
+  }
 }
