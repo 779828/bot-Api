@@ -12,9 +12,6 @@
       "dest": "server.js"
     }
   ],
-  "functions": {
-    "api/gemini.js": { "runtime": "nodejs18.x" }
-  },
   "env": {
     "API_KEY": "@api_key"
   }
