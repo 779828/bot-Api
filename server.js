@@ -16,7 +16,7 @@ const API_URL =
 /**
  * Handles requests from the frontend to generate AI content.
  */
-app.post("/api/gemini", async (req, res) => {
+app.post("/api/shai", async (req, res) => {
   try {
     const response = await axios.post(`${API_URL}?key=${API_KEY}`, req.body, {
       headers: { "Content-Type": "application/json" },
